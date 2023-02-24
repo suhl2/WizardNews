@@ -36,9 +36,13 @@ app.get("/", (req, res) => {
 
 });
 
-app.get("/posts/:id", (req, res) => {
+app.get("/posts/:id", (req, res, next) => {
   const id = req.params.id;
   const post = postBank.find(id);
+  if (!post.id){
+    const error = "ERROR 404";
+    next(error);
+  }
   const html = `<!DOCTYPE html>
   <html>
   <head>
@@ -63,6 +67,11 @@ app.get("/posts/:id", (req, res) => {
   </body>
 </html>`
   res.send(html);
+})
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(404).send("Post not found!");
 })
 
 const PORT = 1337;
